@@ -1,0 +1,91 @@
+/*** CAPL & CANoe ***/
+// Signals and system variables should be accessed via symbol explorer or per autocompletion.
+
+/* Signals */
+$<sig> = 1;                 phys. signal value is set and with next message
+                            it will be sent by the interaction layer.
+
+$<sig>.raw = 1;             assign signal raw data
+                        
+v = $<sig>[.raw];           access last received Signal[raw] value.
+                            Physical values are of type double.
+
+$<sig> =<msg>.<sig>::<text> Access to text table definitions
+
+
+/* System Variables */
+// Assigning values:
+@<sys> = 1;
+@sysvar::<sys> // is also possible
+
+// Reading values:
+if (@<sys>==2.0)
+
+// Special system variables, arrays:
+SysSetVariable<type>(<sys>,buffer[]);
+SysGetVariable<type>(<sys>,buffer[],size);
+
+// <type>: String, IntArray, LongArray, FloatArray, Data
+// SysVar with conversion formula also as .raw for raw values.
+
+/* Timer */
+// Declaration in the variables section:
+msTimer myTmr;
+
+// Simple Timer:
+setTimer(myTmr, <time>);
+
+// Start periodic timer, times in milliseconds:
+setTimerCyclic(myTmr,<period>[,first period]);
+
+// Stopping
+cancelTimer(myTmr);
+
+// Check if active:
+isTimerActive(myTmr)
+
+// Event Handler
+on timer myTmr
+{ … }
+
+/* Messages */
+// Declaration of message variables:
+message <*|id|msg> myMsg;
+
+// Modification:
+myMsg.<selector> = <val>;
+// for <selector> see file this.can
+
+// Copy messages:
+myMsg2 = myMsg1;
+
+// or in an event handler (e.g. a gateway)
+on message CAN1.*
+{
+    message * myMsg2;
+    myMsg2 = this;
+    myMsg2.sigA = this.sigA * 2.0;
+    myMsg2.CAN = 2;
+    output(myMsg); // send
+}
+
+ /* Attributes */
+// Attribute names with (*) are OEM specific. Vector IL:
+
+<msg>.<attribute>
+$ GenMsgSendType*
+$ GenMsgCycleTime*
+$ GenMsgILSupport*
+
+<sig>.<attribute>
+$ GenSigStartValue*
+$ GenSigInactiveValue*
+$ GenSigSendType*
+$ factor // for conversion
+$ offset // for conversion
+$ unit // string
+$ maximum // physical
+$ minimum // physical
+
+
+
