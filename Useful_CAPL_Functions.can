@@ -1,0 +1,25 @@
+/*** Useful CAPL Functions ***/
+
+
+/* Write Window */
+$ Write window output void write(char format[], ...);
+write("Sig phys=%f, Raw=%d", $sig, $sig.raw);
+
+%... = Format expression
+%d decimal      %4d     4 digits
+%f float        %6.2f   6 digits in total, including 2 dec. places
+%x hex          %08X    8 digits, leading zeroes, capital letters
+%s string       for character arrays
+
+$ writeCreate create a new write window tab
+$ writeClear clear a write tab
+$ writeEx extended write 
+$ snprintf output to a string buffer 
+
+// Interaction Layer (control from within the node)
+$ Stop message sending
+    ILDisableMsg(<msg>)
+$ Activate message sending
+    ILEnableMsg(<msg>)
+$ Other:
+    IL…() 
