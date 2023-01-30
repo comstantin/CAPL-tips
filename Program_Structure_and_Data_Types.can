@@ -1,0 +1,123 @@
+/*** Program Structure and Data Types ***/
+
+
+/* Including other Files textually (CAPL Include) */
+Includes
+{
+    #include "MySource.cin"
+}
+
+
+/* Global Variables, <type> = data type */
+variables
+{
+    <type> myVar[=val]; // elementary
+    <type> myArray[10]; // array
+    char myString[20] [="val"];
+}
+
+// <type>
+$ signed            int(16), long(32), int64(64)
+$ unsigned          byte(8), word(16), dword(32), qword(64)
+$ Floating point    float(64), double(64)
+$ character         char(8)
+$ Messages          message <CAN-id> name
+                    message <DBC-Name> name
+$ Other types       Associative Fields
+                    Domain specific types
+
+// Values in round brackets: Number of bits (not in the source code!).
+// All types are usable as local variables.
+
+elcount(myString) returns the array size.
+
+
+/* Please note: */
+$ Local variables are implicitly static.
+$ No program statements prior to variable declarations 
+
+
+/* Own Types – Enums */
+// Type definition in the variables section:
+enum eMyEnumType {eMyEnum1 [=1],eMyEnum2 [=2]};
+
+// Declaration of an enum variable & initialization:
+enum eMyEnumType gMyEnum = eMyEnum1;
+
+// Usage:
+if (gMyEnum == eMyEnum2)
+
+
+/* Own Types – Structs */
+// Type definition in the variables section:
+struct MyStructType
+{
+    int anInt;
+    long aLong;
+};
+
+// Declaration of a struct variable and initialization:
+struct MyStructType gMyStruct [= {20,-1}];
+
+
+/* Access to struct members:*/
+gMyStruct.aLong = 22;
+
+
+/* Constants */
+const <type> = <val>;
+
+
+/* Events */
+// CAPL is 100% event driven, event handler syntax:
+on <event type> [additional parameter]
+{
+// variable declaration
+// program code
+}
+
+
+/* <event type> */
+// 1) System Events
+    $ key 'character' or *      keyboard events
+    $ timer <tmr>               Timer expired
+    $ preStart                  pre measurement start
+    $ start                     after measurement start
+    $ stopMeasurement           before measurement stop
+// 2) Value Objects
+    $ signal <sig>              Signal value changed *)
+    $ signal_update <sig>       Signal write access *)
+    $ sysvar <sys>              System variable value changed
+    $ sysvar_update <sys>       System variable write access
+    $ envvar                    Value change environment variable
+// 3) Messages
+    $ message <msg>             CAN1.frmStatus
+    $ message <id>-<id>         0x100-999
+    $ message *                 any message
+
+    message [*]                 All messages, also those that are processed by
+                                another event handler in this CAPL source code.    
+
+
+/* This */
+// Event data can be accessed via "this".
+on key *            this = character
+on signal           this[.raw] = physical [raw] value *)
+on message          this.<selector>
+$ TIME              measurement time
+$ ID                CAN-ID
+$ DLC               message length (data)
+$ DIR               RX, TX
+$ CAN               channel number
+$ BYTE(0…7),
+  WORD(0..6),
+  DWORD(0…4),
+  QWORD(0) raw data
+$ Signals
+on message <msg>
+{
+    this.sigTemp
+    ...
+
+// Raw data of the temperature signal is returned (compare to “on signal this“).
+// Physical values are accessed with .phys.

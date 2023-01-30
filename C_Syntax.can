@@ -1,0 +1,86 @@
+/*** C-Syntax ***/
+// Operators
+a = 23 + b;         add and assign
+* / -               multiplication, division, subtraction
+r = 37 % 7;         modulo division for integer, here: 2
+a++; b--;           increment or decrement an integer type
+c+=22.0;            increment and assignment
+-= *= /=            decrement, multiplication, division and assignment
+a==b                comparison operator „equal“
+< <= > >= ! =       other comparison operators
+! (a<7) && (b>20)   logical not(!), and (&&)
+||                  logical or
+& | ~               bitwise and, or, complement
+^                   bitwise exclusive or (XOR)
+a = 2<<3;           bit-shift left (afterwards a is 16)
+>>                  bit-shift right
+
+// Please note: Don’t mix up comparison (==) and assignment (=) operator!
+
+/* If Decision */
+if (c <= 50)
+{ // if c less or equal to 50
+}
+
+// Optional branches:
+else if ((c > 50) && (c <= 70))
+{ // if c in ]50,70]
+} …
+else
+{ … } // in all other cases
+
+// Switch Selection
+switch (c)      // integer
+{
+    case 50:    // if c==50: …
+    …
+    break;      // leave this branch
+    case 100:
+    case 101:   // cntr==100 or cntr==101
+    break;
+    …
+    default:    // in all other cases
+    break;
+}
+
+/* For Loop */
+// for (initialization; condition; modification):
+int i;
+for (i=0; i<10; i=i+1)
+{ // statements
+}
+
+/* While Loop */
+while(c<50)
+{ // statements
+}
+
+/* do while – loop */
+// Loop is executed at least once
+do
+{ // statements
+} while (c<50);
+
+/* Please note: */
+// Do not implement infinite loops. CANoe must be terminated via task manager.
+
+/* Functions */
+[<return type>] MyFunction (<type> arg1, …)
+{
+    [return [constant | Variable];]
+}
+return type:    int, long, int64, byte, word, dword, float, double
+                void: no return value
+
+/* Calling a function */
+[var=]MyFunction([val][,val]…);
+
+/* Signals and system variables as function parameters */
+void MyFunction(signal *sig, sysvar * sys, message * msg)
+{
+    $sig = 20.0;
+    @sys = 20.0;
+    $sig = DBLookup(sig).maximum; // see attributes
+    output(msg);
+    }
+// DBlookup([msg|sig]) allows to access database attributes.

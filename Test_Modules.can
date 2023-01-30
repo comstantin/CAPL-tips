@@ -1,0 +1,161 @@
+/*** Test Modules ***/
+// Test modules are not available for CANalyzer.
+
+/* Structure */
+// MainTest is called upon test module start and determines the sequence of test
+// cases. Test groups organize the test module structure and reporting.
+void MainTest()
+{
+    … variables declaration
+    MyTestcase1(…);
+    testGroupBegin (<title>, <description>);
+    MyTestcase1(…);
+    …
+    MyTestcaseN(…);
+    testGroupEnd();
+}
+// Functions marked with testcase are test cases. They do not have return values.
+
+testcase MyTestcase1()
+{ … }
+
+/* Accordance with Simulation Nodes: */
+$ All event handler
+$ C-syntax
+$ Data types
+$ System variables und signal access
+
+/* Test verdict */
+// Every test step, test case, test group and the test module has a test result Fail or Pass.
+
+/* Test cases */
+// Most test cases can be structured logically into three phases:
+1. Stimulation: signals, IOs, messages …
+2. Wait for a reaction
+3. Evaluation
+
+// The phases are made of test steps that set the test verdict:
+testcase myTestcase()
+{ …
+testStep<Pass|Fail>("id", "description");
+…
+testStep ("id", "description"); // w/o verdict
+}
+// id is a user definable text for identification.
+
+/* Functions / Test Functions */
+// Tests that are frequently used should be implemented as either test functions or reusable functions, 
+// as they both produce different reporting data.
+
+/* Stimulation */
+@<sys> = <val>; // system variable
+$<sig> = <val>; // with interaction layer
+output(<msg>); // local message object
+
+/* Waiting for Events : */
+long testWaitFor<what>(…, <max time in millisec.>);
+// <what>
+$ Timeout                   fixed time span
+$ SignalIn/OutSideRange     sys / sig value within / outside range
+$ SignalMatch               sys / sig value
+$ ValueInput                user input
+$ Message                   message reception
+$ TesterConfirmation        user confirmation 
+$ MeasurementEnd            wait for measurement end
+
+Return value: 0 = timeout; 1 = event
+
+
+/* Evaluation */
+// Using C statements:
+if … else …
+
+// Better for signals and system variables:
+testValidateSignalMatch("id",<Sys/Sig>,<val>);
+testValidateSignalIn/OutRange
+
+
+/* Reporting */
+testCaseTitle
+testModuleTitle
+teststep[Pass|Fail]("id", "text …%d text", <var>);
+testreportAdd<what>(…)
+// <what>
+$ EngineerInfo
+$ ExternalRef
+$ Image
+$ WindowCapture
+
+
+/* Fault Insertion */
+// From the test module for all simulation nodes
+$ TestDisableMessage<(msg>)
+$ TestEnableMessage(<msg>)
+$ TestEnableCRCCalculation(<msg>
+$ TestResetAllFaultInjections()
+ 
+
+/* Background Checks */
+// Configuration: (identification is done with a dword handle)
+<dword> = ChkCreate_<checktype> (<parameter>)
+// <Check type>
+$ MsgAbsCycleTimeViolation
+$ ErrorFramesOccured
+
+// Control:
+chkControl_<Start|Stop|Reset|Destroy(<dword>)
+
+// Evaluation:
+chkQuery_<what>(<dword>)
+// <what>
+$ NumEvents
+$ EventStatus
+
+// Check as constraint (=observation of the test environment)
+// or as condition (=observation of the ECU behavior). Both write events to the
+// report and impact the verdict:
+testAdd<Condition|Constraint>(dword[,1])
+
+// By passing in an optional second parameter with a value of 1, the verdict will not be affected.
+
+
+/* Stimulations */
+// Create signal value sequences. Creation with
+<dword> = stmCreate_<what>(<signal>,<parameter>)
+// <what>
+$ CSV       comma separated values
+$ Ramp
+$ Toggle
+
+/// Control:
+stmControl_Start|Stop(<dword>)
+
+
+/* Diagnostics */
+// Diagnostic objects must be declared. The service qualifier should be inserted via
+// Drag & Drop from the Symbol Explorer:
+DiagRequest <service qualifier> myReq;
+DiagResponse <service qualifier> myResp;
+
+// Selecting the diagnostic target:
+DiagSetTarget("<ECU qualifier>");
+
+// Set a request parameter, the parameter qualifier taken from the Symbol Explorer:
+diagSetParameter(myReq, "<Parameter>", val);
+
+// Send:
+DiagSendRequest(myReq);
+
+// Wait for a response:
+int = testWaitForDiagResponse(myName,10000);
+
+// Evaluation of the response should be done in conjunction with the corresponding request,
+// as the request and response are closely related.:
+double = DiagGetRespParameter(myReq, "Para");
+
+// Alternative:
+DiagGetLastResponse(myReq, myResp);
+
+// Other functions:
+$ DiagGetLastResponseCode(myReq) -1 upon positive response, else negative response code
+$ DiagGetComplexParameter(…) dynamic data 
